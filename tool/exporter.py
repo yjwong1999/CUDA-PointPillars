@@ -173,7 +173,7 @@ def main():
       assert check, "Simplified ONNX model could not be validated"
 
       onnx_final = simplify_preprocess(onnx_simp, VOXEL_SIZE_X, VOXEL_SIZE_Y, MAX_POINTS_PER_VOXEL)
-      onnx.save(onnx_final, "pointpillar.onnx")
+      onnx.save(onnx_final, "/content/CUDA-PointPillars/model_custom/pointpillar.onnx")
       print('finished exporting onnx')
 
     logger.info('[PASS] ONNX EXPORTED.')
