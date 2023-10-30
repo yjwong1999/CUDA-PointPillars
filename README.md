@@ -1,6 +1,6 @@
 # PointPillars Inference with TensorRT
 
-[![Open In Colab](https://colab.research.google.com/drive/18EnBx9ZwBbmqa29NOhTihpvnHWeOne6X?usp=sharing)]
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/18EnBx9ZwBbmqa29NOhTihpvnHWeOne6X?usp=sharing)
 
 
 ### Prerequisites
