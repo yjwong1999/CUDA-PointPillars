@@ -28,6 +28,7 @@ from pcdet.config import cfg, cfg_from_yaml_file
 
 from exporter_paramters import export_paramters as export_paramters
 from simplifier_onnx import simplify_preprocess, simplify_postprocess
+from pcdet.models import build_network, load_data_to_gpu
 
 class DemoDataset(DatasetTemplate):
     def __init__(self, dataset_cfg, class_names, training=True, root_path=None, logger=None, ext='.bin'):
@@ -100,10 +101,33 @@ def main():
     np.set_printoptions(threshold=np.inf)
     with torch.no_grad():
 
-      MAX_VOXELS = 40000
+      MAX_VOXELS = 10000
+      NUMBER_OF_CLASSES = len(cfg.CLASS_NAMES)
+
+      MAX_POINTS_PER_VOXEL = None
+
+      DATA_PROCESSOR = cfg.DATA_CONFIG.DATA_PROCESSOR
+      POINT_CLOUD_RANGE = cfg.DATA_CONFIG.POINT_CLOUD_RANGE
+      for i in DATA_PROCESSOR:
+        if i['NAME'] == "transform_points_to_voxels":
+            MAX_POINTS_PER_VOXEL = i['MAX_POINTS_PER_VOXEL']
+            VOXEL_SIZES = i['VOXEL_SIZE']
+            break
+
+
+      if MAX_POINTS_PER_VOXEL == None:
+        logger.info('Could Not Parse Config... Exiting')
+        import sys
+        sys.exit()
+
+      VOXEL_SIZE_X = abs(POINT_CLOUD_RANGE[0] - POINT_CLOUD_RANGE[3]) / VOXEL_SIZES[0]
+      VOXEL_SIZE_Y = abs(POINT_CLOUD_RANGE[1] - POINT_CLOUD_RANGE[4]) / VOXEL_SIZES[1]
+    
+      FEATURE_SIZE_X = VOXEL_SIZE_X / 2 #Is this number of bins? 
+      FEATURE_SIZE_Y = VOXEL_SIZE_Y / 2
 
       dummy_voxels = torch.zeros(
-          (MAX_VOXELS, 32, 4),
+          (MAX_VOXELS, MAX_POINTS_PER_VOXEL, 4),
           dtype=torch.float32,
           device='cuda:0')
 
@@ -117,21 +141,23 @@ def main():
           dtype=torch.int32,
           device='cuda:0')
 
+      #dummy_input = dict()
+      #dummy_input['voxels'] = dummy_voxels
+      #dummy_input['voxel_num_points'] = dummy_voxel_num
+      #dummy_input['voxel_coords'] = dummy_voxel_idxs
+      #dummy_input['batch_size'] = torch.tensor(1)
+
       dummy_input = dict()
       dummy_input['batch_dict'] = { # to solve TypeError: PointPillar.forward() missing 1 required positional argument: 'batch_dict'
           'voxels': dummy_voxels,
           'voxel_num_points': dummy_voxel_num,
           'voxel_coords': dummy_voxel_idxs,
-          'batch_size': 1
-      } 
-      # dummy_input['voxels'] = dummy_voxels
-      # dummy_input['voxel_num_points'] = dummy_voxel_num
-      # dummy_input['voxel_coords'] = dummy_voxel_idxs
-      # dummy_input['batch_size'] = 1
+          'batch_size': torch.tensor(1)
+      }
 
       torch.onnx.export(model,       # model being run
           dummy_input,               # model input (or a tuple for multiple inputs)
-          "./pointpillar_raw.onnx",  # where to save the model (can be a file or file-like object)
+          "/content/CUDA-PointPillars/model_custom/pointpillar_raw.onnx",  # where to save the model (can be a file or file-like object)
           export_params=True,        # store the trained parameter weights inside the model file
           opset_version=11,          # the ONNX version to export the model to
           do_constant_folding=True,  # whether to execute constant folding for optimization
@@ -140,14 +166,14 @@ def main():
           output_names = ['cls_preds', 'box_preds', 'dir_cls_preds'], # the model's output names
           )
 
-      # onnx_raw = onnx.load("./pointpillar_raw.onnx")  # load onnx model
-      # onnx_trim_post = simplify_postprocess(onnx_raw)
+      onnx_raw = onnx.load("/content/CUDA-PointPillars/model_custom/pointpillar_raw.onnx")  # load onnx model
+      onnx_trim_post = simplify_postprocess(onnx_raw, FEATURE_SIZE_X, FEATURE_SIZE_Y, NUMBER_OF_CLASSES)
       
-      # onnx_simp, check = simplify(onnx_trim_post)
-      # assert check, "Simplified ONNX model could not be validated"
+      onnx_simp, check = simplify(onnx_trim_post)
+      assert check, "Simplified ONNX model could not be validated"
 
-      # onnx_final = simplify_preprocess(onnx_simp)
-      # onnx.save(onnx_final, "pointpillar.onnx")
+      onnx_final = simplify_preprocess(onnx_simp, VOXEL_SIZE_X, VOXEL_SIZE_Y, MAX_POINTS_PER_VOXEL)
+      onnx.save(onnx_final, "pointpillar.onnx")
       print('finished exporting onnx')
 
     logger.info('[PASS] ONNX EXPORTED.')

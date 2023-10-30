@@ -20,7 +20,7 @@
 #include <fstream>
 
 #include "cuda_runtime.h"
-
+#include "./args.hxx"
 #include "./params.h"
 #include "./pointpillar.h"
 
@@ -37,9 +37,9 @@
     }                                                             \
 }
 
-std::string Data_File = "../data/";
-std::string Save_Dir = "../eval/kitti/object/pred_velo/";
-std::string Model_File = "../model/pointpillar.onnx";
+// std::string Data_File = "../data/";
+// std::string Save_Dir = "../eval/kitti/object/pred_velo/";
+// std::string Model_File = "../model/pointpillar.onnx";
 
 void Getinfo(void)
 {
@@ -125,6 +125,30 @@ void SaveBoxPred(std::vector<Bndbox> boxes, std::string file_name)
 
 int main(int argc, const char **argv)
 {
+
+  // Create a command line argument parser using Args
+  args::ArgumentParser parser("A demo program for PointPillars");
+  
+  args::ValueFlag<std::string> dataDir(parser, "data", "Data directory path", {'d', "data"});
+  args::ValueFlag<std::string> saveDir(parser, "save-dir", "Save directory path", {'s', "save-dir"});
+  args::ValueFlag<std::string> modelFile(parser, "model", "Model file path", {'m', "model"});
+
+  try {
+    parser.ParseCLI(argc, argv);
+  } catch (args::Help) {
+    std::cout << parser;
+    return 0;
+  } catch (args::ParseError e) {
+    std::cerr << e.what() << std::endl;
+    std::cerr << parser;
+    return 1;
+  }
+
+  // Retrieve values for Data_File, Save_Dir, and Model_File from the parsed arguments
+  std::string Data_File = args::get(dataDir);
+  std::string Save_Dir = args::get(saveDir);
+  std::string Model_File = args::get(modelFile);
+	
   Getinfo();
 
   cudaEvent_t start, stop;
