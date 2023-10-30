@@ -1,5 +1,3 @@
-%%writefile /content/CUDA-PointPillars/include/args.hxx
-
 /* A simple header-only C++ argument parser library.
  *
  * https://github.com/Taywee/args
