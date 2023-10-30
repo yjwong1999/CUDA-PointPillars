@@ -37,6 +37,10 @@ $ cmake .. && make -j$(nproc)
 $ ./demo
 ```
 
+```
+!python visualize_point_cloud.py --bin_file /path/to/your/point_cloud.bin --pred_file /path/to/your/prediction.txt
+```
+
 #### Performance in FP16
 
 Set Jetson to power mode with "sudo nvpmodel -m 0 && sudo jetson_clocks"
