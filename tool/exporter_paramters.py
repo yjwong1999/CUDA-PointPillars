@@ -1,5 +1,6 @@
 import numpy as np
 from pcdet.config import cfg
+import os
 
 License = '''/*
  * SPDX-FileCopyrightText: Copyright (c) 2021 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
@@ -79,7 +80,8 @@ def export_paramters(cfg):
   NMS_THRESH = cfg.MODEL.POST_PROCESSING.NMS_CONFIG.NMS_THRESH
 
   # dump paramters to params.h
-  fo = open("/content/CUDA-PointPillars/model_custom/params.h","w")
+  base_dir = os.getcwd()
+  fo = open(os.path.join(base_dir, 'CUDA-PointPillars', 'model_custom', 'params.h'),"w")
   fo.write(License+"\n")
   fo.write("#ifndef PARAMS_H_\n#define PARAMS_H_\n")
   fo.write("const int MAX_VOXELS = "+str(MAX_NUMBER_OF_VOXELS)+";\n")
