@@ -19,3 +19,6 @@ pip install PyQt5
 
 # Move back to the original directory
 cd ..
+
+pip install pyyaml scikit-image onnx onnx-simplifier
+pip install onnx_graphsurgeon --index-url https://pypi.ngc.nvidia.com
