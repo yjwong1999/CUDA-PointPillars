@@ -49,7 +49,7 @@ def main(args):
     axs[1].set_ylabel('Y')
 
     # Show the plot
-    plt.show()
+    plt.savefig('visualization.png')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Visualize 3D point cloud with bounding boxes')
