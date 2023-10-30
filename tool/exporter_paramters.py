@@ -79,7 +79,7 @@ def export_paramters(cfg):
   NMS_THRESH = cfg.MODEL.POST_PROCESSING.NMS_CONFIG.NMS_THRESH
 
   # dump paramters to params.h
-  fo = open("params.h","w")
+  fo = open("/content/CUDA-PointPillars/model_custom/params.h","w")
   fo.write(License+"\n")
   fo.write("#ifndef PARAMS_H_\n#define PARAMS_H_\n")
   fo.write("const int MAX_VOXELS = "+str(MAX_NUMBER_OF_VOXELS)+";\n")
