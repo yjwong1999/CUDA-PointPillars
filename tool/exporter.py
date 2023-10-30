@@ -157,7 +157,7 @@ def main():
 
       torch.onnx.export(model,       # model being run
           dummy_input,               # model input (or a tuple for multiple inputs)
-          "/content/pointpillar_raw.onnx",  # where to save the model (can be a file or file-like object)
+          "/content/CUDA-PointPillars/model_custom/pointpillar_raw.onnx",  # where to save the model (can be a file or file-like object)
           export_params=True,        # store the trained parameter weights inside the model file
           opset_version=11,          # the ONNX version to export the model to
           do_constant_folding=True,  # whether to execute constant folding for optimization
@@ -166,14 +166,14 @@ def main():
           output_names = ['cls_preds', 'box_preds', 'dir_cls_preds'], # the model's output names
           )
 
-      onnx_raw = onnx.load("/content/pointpillar_raw.onnx")  # load onnx model
+      onnx_raw = onnx.load("/content/CUDA-PointPillars/model_custom/pointpillar_raw.onnx")  # load onnx model
       onnx_trim_post = simplify_postprocess(onnx_raw, FEATURE_SIZE_X, FEATURE_SIZE_Y, NUMBER_OF_CLASSES)
       
       onnx_simp, check = simplify(onnx_trim_post)
       assert check, "Simplified ONNX model could not be validated"
 
       onnx_final = simplify_preprocess(onnx_simp, VOXEL_SIZE_X, VOXEL_SIZE_Y, MAX_POINTS_PER_VOXEL)
-      onnx.save(onnx_final, "/content/CUDA-PointPillars/model_custom/pointpillar.onnx")
+      onnx.save(onnx_final, "pointpillar.onnx")
       print('finished exporting onnx')
 
     logger.info('[PASS] ONNX EXPORTED.')
