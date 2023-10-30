@@ -1,6 +1,8 @@
 import argparse
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+from shapely.geometry import Polygon
 
 def main(args):
     # Load binary point cloud
@@ -17,10 +19,14 @@ def main(args):
     boxes = []
     for line in lines:
         data = line.split()
-        x, y, z, w, l, h, _, _, _ = map(float, data)
+        x, y, z, dx, dy, dz, rot, cls, conf = map(float, data)
 
         # Create a rectangle representing the bounding box (bird's eye view)
-        rectangle = plt.Rectangle((x - w / 2, y - l / 2), w, l, fill=False, color="red")
+        #rectangle = plt.Rectangle((x - dx / 2, y - dy / 2), dx, dy, fill=False, color="red")
+        bottom_left_x = x - dx / 2
+        bottom_left_y = y - dy / 2
+        rot = rot * 57.2957795 # rad to degree
+        rectangle = matplotlib.patches.Rectangle((bottom_left_x, bottom_left_y), dx, dy, angle=rot, color="red", fill=False)
         boxes.append(rectangle)
 
     # Create a figure with two subplots
@@ -50,6 +56,7 @@ def main(args):
 
     # Show the plot
     plt.savefig('visualization.png')
+    print('Done Visualization....Saving in current directory')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Visualize 3D point cloud with bounding boxes')
