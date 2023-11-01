@@ -26,8 +26,12 @@ def main(args):
         bottom_left_x = x - dx / 2
         bottom_left_y = y - dy / 2
         rot = rot * 57.2957795 # rad to degree
+        if cls == 1: 
+            color = 'red' 
+        else:
+            color = 'blue'
         rectangle = matplotlib.patches.Rectangle((bottom_left_x, bottom_left_y), dx, dy, angle=rot, \
-                                                    rotation_point="center", color="red", fill=False)
+                                                    rotation_point="center", color=color, fill=False)
         boxes.append(rectangle)
 
     # Create a figure with two subplots
