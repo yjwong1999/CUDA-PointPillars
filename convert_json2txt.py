@@ -2,12 +2,13 @@ import json
 import os
 import argparse
 
-def convert_json_to_text(json_file, output_dir, magnify_factor):
-    with open(json_file, 'r') as json_file:
+def convert_json_to_text(json_file_path, output_dir, magnify_factor, file_counter):
+    with open(json_file_path, 'r') as json_file:
         json_data = json.load(json_file)
 
-    # Loop through objects in the JSON data
-    for i, obj in enumerate(json_data['objects']):
+    lines = []
+
+    for obj in json_data['objects']:
         x = obj['centroid']['x'] * magnify_factor
         y = obj['centroid']['y'] * magnify_factor
         z = obj['centroid']['z'] * magnify_factor
@@ -15,18 +16,17 @@ def convert_json_to_text(json_file, output_dir, magnify_factor):
         dy = obj['dimensions']['width'] * magnify_factor
         dz = obj['dimensions']['height'] * magnify_factor
         rot = obj['rotations']['z']
-        cls = obj['name']
+        cls = 0 if obj['name'] == 'good' else 1
 
-        # Format the data as a line of text
         line = f"{x} {y} {z} {dx} {dy} {dz} {rot} {cls}"
+        lines.append(line)
 
-        # Create the output text file name following the naming logic
-        file_number = str(i).zfill(6)  # Format the index with leading zeros
-        output_filename = os.path.join(output_dir, f"{file_number}.txt")
+    # Use the file_counter to name the output file
+    output_filename = os.path.join(output_dir, f"{str(file_counter).zfill(6)}.txt")
 
-        # Write the line to the text file
-        with open(output_filename, 'w') as output_file:
-            output_file.write(line)
+    with open(output_filename, 'w') as output_file:
+        for line in lines:
+            output_file.write(line + '\n')
 
 def main():
     parser = argparse.ArgumentParser(description="Convert JSON label files to text files.")
@@ -36,15 +36,19 @@ def main():
 
     args = parser.parse_args()
 
-    # Create the output directory if it doesn't exist
     os.makedirs(args.output_dir, exist_ok=True)
 
-    # Loop through the input directory and process each JSON file
-    for root, dirs, files in os.walk(args.input_dir):
-        for file in files:
-            if file.endswith(".json"):
-                json_file = os.path.join(root, file)
-                convert_json_to_text(json_file, args.output_dir, args.magnify_factor)
+    json_files = sorted([f for f in os.listdir(args.input_dir) if f.endswith(".json")])
+
+    # Initialize a counter for the output files
+    file_counter = 0
+
+    for json_file in json_files:
+        json_file_path = os.path.join(args.input_dir, json_file)
+        convert_json_to_text(json_file_path, args.output_dir, args.magnify_factor, file_counter)
+
+        # Increment the counter after each file is processed
+        file_counter += 1
 
     print("Text files created successfully.")
 
