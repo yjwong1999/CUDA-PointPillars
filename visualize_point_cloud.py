@@ -19,7 +19,12 @@ def main(args):
     boxes = []
     for line in lines:
         data = line.split()
-        x, y, z, dx, dy, dz, rot, cls, conf = map(float, data)
+        if len(data) == 8:
+          x, y, z, dx, dy, dz, rot, cls = map(float, data)
+        elif len(data) == 9:
+          x, y, z, dx, dy, dz, rot, cls, conf = map(float, data)
+        else:
+          print(f"Unexpected number of items in line: {len(data)}")
 
         # Create a rectangle representing the bounding box (bird's eye view)
         #rectangle = plt.Rectangle((x - dx / 2, y - dy / 2), dx, dy, fill=False, color="red")
