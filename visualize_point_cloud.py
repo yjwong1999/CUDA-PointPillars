@@ -91,10 +91,12 @@ def visualize_3d_point_cloud(bin_dir, pred_dir, truth_dir, output_dir):
             axs[0].add_patch(box)
 
         # Set plot limits and labels for the left subplot
-        axs[0].set_xlim(-10, 30)
-        axs[0].set_ylim(0, 30)
-        axs[0].set_xlabel('X')
-        axs[0].set_ylabel('Y')
+        axs[0].set_xlim(-5, 32)
+        axs[0].set_ylim(-5, 25)
+        axs[0].set_title("Truth Label")
+        axs[0].set_xticks([])
+        axs[0].set_yticks([])
+
 
         # Create a scatter plot of the point cloud (bird's eye view) in the right subplot
         axs[1].scatter(points[:, 0], points[:, 1], s=0.1, c=points[:, 2], cmap='viridis')
@@ -104,10 +106,12 @@ def visualize_3d_point_cloud(bin_dir, pred_dir, truth_dir, output_dir):
             axs[1].add_patch(box)
 
         # Set plot limits and labels for the right subplot
-        axs[1].set_xlim(-10, 30)
-        axs[1].set_ylim(0, 30)
-        axs[1].set_xlabel('X')
-        axs[1].set_ylabel('Y')
+        axs[1].set_xlim(-5, 32)
+        axs[1].set_ylim(-5, 25)
+        axs[1].set_title("Predicted Label")
+        axs[1].set_xticks([])
+        axs[1].set_yticks([])
+
 
         # Save the figure with a unique name based on the input binary file
         figure_filename = os.path.splitext(bin_file)[0] + '_visualization.png'
@@ -117,6 +121,7 @@ def visualize_3d_point_cloud(bin_dir, pred_dir, truth_dir, output_dir):
 
         # Close the figures to prevent memory consumption
         plt.close('all')
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Visualize 3D point clouds with bounding boxes')
