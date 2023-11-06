@@ -115,6 +115,9 @@ def visualize_3d_point_cloud(bin_dir, pred_dir, truth_dir, output_dir):
         plt.savefig(figure_path)
         print(f'Saved visualization for {bin_file} in {figure_path}')
 
+        # Close the figures to prevent memory consumption
+        plt.close('all')
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Visualize 3D point clouds with bounding boxes')
     parser.add_argument('--bin_dir', type=str, required=True, help='Directory containing binary point cloud files')
