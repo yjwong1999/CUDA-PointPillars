@@ -17,6 +17,11 @@ def visualize_3d_point_cloud(bin_dir, pred_dir, truth_dir, output_dir):
         pred_file = os.path.join(pred_dir, bin_file.replace('.bin', '.txt'))
         truth_file = os.path.join(truth_dir, bin_file.replace('.bin', '.txt'))
 
+        # Check if prediction and truth files exist before processing
+        if not (os.path.exists(pred_file)):
+            print(f"Skipping {bin_file} as prediction label file do not exist.")
+            continue
+
         # Load binary point cloud
         bin = np.fromfile(bin_path, dtype=np.float32)
 
