@@ -1,6 +1,6 @@
 import numpy as np
 import os
-
+import argparse
 # Check if Plotly is installed and install it if necessary
 try:
     import plotly.express as px
@@ -26,7 +26,13 @@ def load_label_data(file_path):
 
 def add_bounding_boxes(fig, label_data):
     for label in label_data:
-        x, y, z, dx, dy, dz, rot, cls = map(float, label)
+        if len(label) == 8:
+            x, y, z, dx, dy, dz, rot, cls = map(float, label)
+        elif len(label) == 9:
+            x, y, z, dx, dy, dz, rot, cls, conf = map(float, label)
+        else:
+          print(f"Unexpected pred number of items in line: {len(data)}")
+
         corners, edges = get_bounding_box(x, y, z, dx, dy, dz, rot)
         fig = add_edges_to_plot(fig, edges, cls)
     return fig
