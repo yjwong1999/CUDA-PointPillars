@@ -38,6 +38,8 @@ def visualize_3d_point_cloud(bin_dir, pred_dir, truth_dir, output_dir):
             data = line.split()
             if len(data) == 9:
               x, y, z, dx, dy, dz, rot, cls, conf = map(float, data)
+            elif len(data) == 8: # To use two truth labels files instead
+              x, y, z, dx, dy, dz, rot, cls = map(float, data)
             else:
               print(f"Unexpected pred number of items in line: {len(data)}")
 
