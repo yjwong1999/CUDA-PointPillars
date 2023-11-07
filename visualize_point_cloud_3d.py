@@ -1,12 +1,7 @@
 import numpy as np
 import os
 import argparse
-# Check if Plotly is installed and install it if necessary
-try:
-    import plotly.express as px
-except ImportError:
-    pip install plotly
-    import plotly.express as px
+import plotly.express as px
 import plotly.graph_objects as go
 
 def load_point_cloud(file_path):
