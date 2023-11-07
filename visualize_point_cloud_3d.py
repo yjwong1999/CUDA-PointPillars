@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import argparse
+import plotly.io as py
 import plotly.express as px
 import plotly.graph_objects as go
 
@@ -117,6 +118,7 @@ def main():
     )
 
     fig.show()
+    py.write_html(fig, '3d_output.html')
 
 if __name__ == '__main__':
     main()
