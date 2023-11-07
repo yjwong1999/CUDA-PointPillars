@@ -5,7 +5,7 @@ import argparse
 try:
     import plotly.express as px
 except ImportError:
-    !pip install plotly
+    pip install plotly
     import plotly.express as px
 import plotly.graph_objects as go
 
