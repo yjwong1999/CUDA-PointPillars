@@ -38,6 +38,12 @@ def visualize_3d_point_cloud(bin_dir, pred_dir, truth_dir, output_dir):
             data = line.split()
             if len(data) == 9:
               x, y, z, dx, dy, dz, rot, cls, conf = map(float, data)
+
+            
+              # Add a filter to ignore bounding boxes below confidence score 0.2
+              if conf < 0.2:
+                continue
+                  
             elif len(data) == 8: # To use two truth labels files instead
               x, y, z, dx, dy, dz, rot, cls = map(float, data)
             else:
